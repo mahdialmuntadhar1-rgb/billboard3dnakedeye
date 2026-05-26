@@ -1,0 +1,6 @@
+{
+  "name": "Business Exploration Platform",
+  "description": "A highly polished, production-ready discovery engine for businesses with advanced filtering, multi-language/RTL support, and clean mock-first API state structures.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
