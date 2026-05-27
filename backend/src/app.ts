@@ -4,6 +4,7 @@ import { logger } from './middleware/logger';
 import { authRoutes } from './routes/auth';
 import { businessRoutes } from './routes/businesses';
 import { healthRoutes } from './routes/health';
+import { feedRoutes } from './routes/feed';
 import type { Bindings, Variables } from './types';
 
 const app = new Hono<{ Bindings: Bindings; Variables: Variables }>();
@@ -13,9 +14,10 @@ app.use('*', cors());
 app.use('*', logger());
 
 // Routes
-app.route('/auth', authRoutes);
-app.route('/businesses', businessRoutes);
-app.route('/health', healthRoutes);
+app.route('/api/auth', authRoutes);
+app.route('/api/businesses', businessRoutes);
+app.route('/api/health', healthRoutes);
+app.route('/api/feed', feedRoutes);
 
 // Root endpoint
 app.get('/', (c) => {

@@ -76,6 +76,7 @@ export class DatabaseClient {
     offset: number;
     category?: string;
     city?: string;
+    governorate?: string;
     search?: string;
   }) {
     let query = 'SELECT * FROM businesses WHERE is_active = 1';
@@ -86,7 +87,10 @@ export class DatabaseClient {
       queryParams.push(params.category);
     }
 
-    if (params.city) {
+    if (params.governorate) {
+      query += ' AND (governorate = ? OR LOWER(city) = ?)';
+      queryParams.push(params.governorate, params.governorate);
+    } else if (params.city) {
       query += ' AND city = ?';
       queryParams.push(params.city);
     }
@@ -106,6 +110,7 @@ export class DatabaseClient {
   async getBusinessesCount(params: {
     category?: string;
     city?: string;
+    governorate?: string;
     search?: string;
   }) {
     let query = 'SELECT COUNT(*) as count FROM businesses WHERE is_active = 1';
@@ -116,7 +121,10 @@ export class DatabaseClient {
       queryParams.push(params.category);
     }
 
-    if (params.city) {
+    if (params.governorate) {
+      query += ' AND (governorate = ? OR LOWER(city) = ?)';
+      queryParams.push(params.governorate, params.governorate);
+    } else if (params.city) {
       query += ' AND city = ?';
       queryParams.push(params.city);
     }

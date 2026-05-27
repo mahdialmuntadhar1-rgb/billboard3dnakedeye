@@ -43,6 +43,7 @@ businesses.get('/', async (c) => {
       offset: pagination.offset,
       category: query.category,
       city: query.city,
+      governorate: query.governorate,
       search: query.search
     });
 
@@ -50,35 +51,52 @@ businesses.get('/', async (c) => {
     const countResult = await db.getBusinessesCount({
       category: query.category,
       city: query.city,
+      governorate: query.governorate,
       search: query.search
     });
     const total = typeof countResult === 'number' ? countResult : (countResult as any)?.count || 0;
 
     const meta = PaginationUtils.buildMeta(total, pagination);
 
-    // Transform to DTO format
+    // Transform to DTO format with all fields
     const businessDTOs: BusinessDTO[] = businessResults.map((biz: any) => ({
       id: biz.id as string,
       name: biz.name as string,
       description: biz.description as string,
+      bio: biz.bio as string | undefined,
       category: biz.category as string,
       city: biz.city as string,
+      governorate: biz.governorate as string | undefined,
       country: biz.country as string,
       website: biz.website as string | undefined,
       email: biz.email as string | undefined,
       phone: biz.phone as string | undefined,
+      mobile: biz.mobile as string | undefined,
       address: biz.address as string | undefined,
-      rating: biz.rating as number,
-      reviewCount: biz.review_count as number,
+      coverImageUrl: biz.cover_image_url as string | undefined,
+      logoUrl: biz.logo_url as string | undefined,
+      rating: (biz.rating as number) || 0,
+      reviewCount: (biz.review_count as number) || 0,
+      views: (biz.views as number) || 0,
+      likes: (biz.likes as number) || 0,
+      saves: (biz.saves as number) || 0,
+      verified: biz.verified === 1,
       isActive: biz.is_active === 1,
       createdAt: biz.created_at as string,
       updatedAt: biz.updated_at as string
     }));
 
-    // Return DTO-compliant response
-    const response: BusinessListResponseDTO = {
+    // Return DTO-compliant response with pagination (matches frontend expectation)
+    const response = {
       success: true,
       data: businessDTOs,
+      pagination: {
+        total,
+        page: pagination.page,
+        limit: pagination.limit,
+        hasNext: meta.hasNext,
+        hasPrev: meta.hasPrev
+      },
       meta: {
         total,
         page: pagination.page,
@@ -110,20 +128,29 @@ businesses.get('/:id', async (c) => {
       return errorResponse(c, 'NOT_FOUND', 'Business not found', 404);
     }
 
-    // Transform to DTO format
+    // Transform to DTO format with all fields
     const businessDTO: BusinessDTO = {
       id: business.id as string,
       name: business.name as string,
       description: business.description as string,
+      bio: business.bio as string | undefined,
       category: business.category as string,
       city: business.city as string,
+      governorate: business.governorate as string | undefined,
       country: business.country as string,
       website: business.website as string | undefined,
       email: business.email as string | undefined,
       phone: business.phone as string | undefined,
+      mobile: business.mobile as string | undefined,
       address: business.address as string | undefined,
-      rating: business.rating as number,
-      reviewCount: business.review_count as number,
+      coverImageUrl: business.cover_image_url as string | undefined,
+      logoUrl: business.logo_url as string | undefined,
+      rating: (business.rating as number) || 0,
+      reviewCount: (business.review_count as number) || 0,
+      views: (business.views as number) || 0,
+      likes: (business.likes as number) || 0,
+      saves: (business.saves as number) || 0,
+      verified: business.verified === 1,
       isActive: business.is_active === 1,
       createdAt: business.created_at as string,
       updatedAt: business.updated_at as string
@@ -169,20 +196,29 @@ businesses.post('/', authMiddleware, async (c) => {
       return errorResponse(c, 'CREATION_FAILED', 'Failed to retrieve created business');
     }
 
-    // Transform to DTO format
+    // Transform to DTO format with all fields
     const businessDTO: BusinessDTO = {
       id: business.id as string,
       name: business.name as string,
       description: business.description as string,
+      bio: business.bio as string | undefined,
       category: business.category as string,
       city: business.city as string,
+      governorate: business.governorate as string | undefined,
       country: business.country as string,
       website: business.website as string | undefined,
       email: business.email as string | undefined,
       phone: business.phone as string | undefined,
+      mobile: business.mobile as string | undefined,
       address: business.address as string | undefined,
-      rating: business.rating as number,
-      reviewCount: business.review_count as number,
+      coverImageUrl: business.cover_image_url as string | undefined,
+      logoUrl: business.logo_url as string | undefined,
+      rating: (business.rating as number) || 0,
+      reviewCount: (business.review_count as number) || 0,
+      views: (business.views as number) || 0,
+      likes: (business.likes as number) || 0,
+      saves: (business.saves as number) || 0,
+      verified: business.verified === 1,
       isActive: business.is_active === 1,
       createdAt: business.created_at as string,
       updatedAt: business.updated_at as string
@@ -235,20 +271,29 @@ businesses.put('/:id', authMiddleware, async (c) => {
       return errorResponse(c, 'UPDATE_FAILED', 'Failed to retrieve updated business');
     }
 
-    // Transform to DTO format
+    // Transform to DTO format with all fields
     const businessDTO: BusinessDTO = {
       id: updatedBusiness.id as string,
       name: updatedBusiness.name as string,
       description: updatedBusiness.description as string,
+      bio: updatedBusiness.bio as string | undefined,
       category: updatedBusiness.category as string,
       city: updatedBusiness.city as string,
+      governorate: updatedBusiness.governorate as string | undefined,
       country: updatedBusiness.country as string,
       website: updatedBusiness.website as string | undefined,
       email: updatedBusiness.email as string | undefined,
       phone: updatedBusiness.phone as string | undefined,
+      mobile: updatedBusiness.mobile as string | undefined,
       address: updatedBusiness.address as string | undefined,
-      rating: updatedBusiness.rating as number,
-      reviewCount: updatedBusiness.review_count as number,
+      coverImageUrl: updatedBusiness.cover_image_url as string | undefined,
+      logoUrl: updatedBusiness.logo_url as string | undefined,
+      rating: (updatedBusiness.rating as number) || 0,
+      reviewCount: (updatedBusiness.review_count as number) || 0,
+      views: (updatedBusiness.views as number) || 0,
+      likes: (updatedBusiness.likes as number) || 0,
+      saves: (updatedBusiness.saves as number) || 0,
+      verified: updatedBusiness.verified === 1,
       isActive: updatedBusiness.is_active === 1,
       createdAt: updatedBusiness.created_at as string,
       updatedAt: updatedBusiness.updated_at as string
