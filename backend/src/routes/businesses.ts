@@ -3,6 +3,7 @@ import { successResponse, errorResponse } from '../utils/response';
 import { JWTUtils } from '../utils/jwt';
 import { DatabaseClient } from '../db/client';
 import { PaginationUtils } from '../utils/pagination';
+import { getBusinessImageUrl } from '../utils/business-images';
 import type { Bindings, Variables } from '../types';
 import type { BusinessDTO, BusinessListResponseDTO, BusinessDetailResponseDTO, CreateBusinessDTO, UpdateBusinessDTO } from '../dtos/business.dto';
 
@@ -29,15 +30,77 @@ const authMiddleware = async (c: any, next: any) => {
   await next();
 };
 
-// GET /businesses
+// GET /businesses — supports both offset (legacy) and cursor (new) pagination
 businesses.get('/', async (c) => {
   try {
     const query = c.req.query();
+    const db = new DatabaseClient(c.env.DB);
+
+    const limit = Math.min(parseInt(query.limit || '20', 10), 50);
+
+    // ── Cursor-based (keyset) pagination (default for 8000+ rows) ──
+    // Use cursor mode unless explicit ?page=N is provided (legacy offset)
+    if (query.page === undefined) {
+      const businessResults = await db.getBusinessesCursor({
+        limit,
+        cursor: query.cursor || undefined,
+        category: query.category,
+        city: query.city,
+        governorate: query.governorate,
+        search: query.search
+      });
+
+      const hasMore = businessResults.length > limit;
+      const rows = hasMore ? businessResults.slice(0, limit) : businessResults;
+      const nextCursor = hasMore ? (rows[rows.length - 1] as any)?.id : null;
+
+      const businessDTOs: BusinessDTO[] = rows.map((biz: any) => ({
+        id: biz.id as string,
+        name: biz.name as string,
+        description: biz.description as string,
+        bio: biz.bio as string | undefined,
+        category: biz.category as string,
+        city: biz.city as string,
+        governorate: biz.governorate as string | undefined,
+        country: biz.country as string,
+        website: biz.website as string | undefined,
+        email: biz.email as string | undefined,
+        phone: biz.phone as string | undefined,
+        mobile: biz.mobile as string | undefined,
+        address: biz.address as string | undefined,
+        coverImageUrl: getBusinessImageUrl(
+          biz.id as string,
+          biz.category as string,
+          biz.cover_image_url as string | null
+        ),
+        logoUrl: biz.logo_url as string | undefined,
+        rating: (biz.rating as number) || 0,
+        reviewCount: (biz.review_count as number) || 0,
+        views: (biz.views as number) || 0,
+        likes: (biz.likes as number) || 0,
+        saves: (biz.saves as number) || 0,
+        verified: biz.verified === 1,
+        isActive: biz.is_active === 1,
+        createdAt: biz.created_at as string,
+        updatedAt: biz.updated_at as string
+      }));
+
+      // Cache first page for 60s
+      if (!query.cursor) {
+        c.header('Cache-Control', 'public, max-age=60, stale-while-revalidate=300');
+      }
+
+      return c.json({
+        success: true,
+        data: businessDTOs,
+        next_cursor: nextCursor,
+        has_more: hasMore,
+      });
+    }
+
+    // ── Legacy offset pagination (kept for backward compat) ──
     const pagination = PaginationUtils.parseParams(query);
 
-    const db = new DatabaseClient(c.env.DB);
-    
-    // Get businesses
     const businessResults = await db.getBusinesses({
       limit: pagination.limit,
       offset: pagination.offset,
@@ -47,7 +110,6 @@ businesses.get('/', async (c) => {
       search: query.search
     });
 
-    // Get total count
     const countResult = await db.getBusinessesCount({
       category: query.category,
       city: query.city,
@@ -58,7 +120,6 @@ businesses.get('/', async (c) => {
 
     const meta = PaginationUtils.buildMeta(total, pagination);
 
-    // Transform to DTO format with all fields
     const businessDTOs: BusinessDTO[] = businessResults.map((biz: any) => ({
       id: biz.id as string,
       name: biz.name as string,
@@ -73,7 +134,11 @@ businesses.get('/', async (c) => {
       phone: biz.phone as string | undefined,
       mobile: biz.mobile as string | undefined,
       address: biz.address as string | undefined,
-      coverImageUrl: biz.cover_image_url as string | undefined,
+      coverImageUrl: getBusinessImageUrl(
+        biz.id as string,
+        biz.category as string,
+        biz.cover_image_url as string | null
+      ),
       logoUrl: biz.logo_url as string | undefined,
       rating: (biz.rating as number) || 0,
       reviewCount: (biz.review_count as number) || 0,
@@ -86,8 +151,7 @@ businesses.get('/', async (c) => {
       updatedAt: biz.updated_at as string
     }));
 
-    // Return DTO-compliant response with pagination (matches frontend expectation)
-    const response = {
+    return c.json({
       success: true,
       data: businessDTOs,
       pagination: {
@@ -104,10 +168,9 @@ businesses.get('/', async (c) => {
         hasNext: meta.hasNext,
         hasPrev: meta.hasPrev
       }
-    };
-
-    return c.json(response);
+    });
   } catch (error) {
+    console.error('Businesses fetch error:', error);
     return errorResponse(c, 'INTERNAL_ERROR', 'Failed to fetch businesses');
   }
 });
@@ -143,7 +206,11 @@ businesses.get('/:id', async (c) => {
       phone: business.phone as string | undefined,
       mobile: business.mobile as string | undefined,
       address: business.address as string | undefined,
-      coverImageUrl: business.cover_image_url as string | undefined,
+      coverImageUrl: getBusinessImageUrl(
+        business.id as string,
+        business.category as string,
+        business.cover_image_url as string | null
+      ),
       logoUrl: business.logo_url as string | undefined,
       rating: (business.rating as number) || 0,
       reviewCount: (business.review_count as number) || 0,

@@ -9,7 +9,7 @@ JWT_SECRET = "your-super-secret-jwt-key-change-in-production"
 [[d1_databases]]
 binding = "DB"
 database_name = "billboard3d-db"
-database_id = "your-database-id"
+database_id = "b8652516-cde1-4b50-b4b3-c226957fce95"
 
 [env.production.vars]
 JWT_SECRET = "your-production-jwt-secret"

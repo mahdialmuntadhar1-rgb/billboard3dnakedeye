@@ -36,6 +36,7 @@ CREATE INDEX IF NOT EXISTS idx_businesses_country ON businesses(country);
 CREATE INDEX IF NOT EXISTS idx_businesses_is_active ON businesses(is_active);
 CREATE INDEX IF NOT EXISTS idx_businesses_rating ON businesses(rating);
 CREATE INDEX IF NOT EXISTS idx_businesses_created_at ON businesses(created_at);
+CREATE INDEX IF NOT EXISTS idx_businesses_created_at_id ON businesses(created_at DESC, id DESC);
 
 -- Sample data (optional - for testing)
 INSERT INTO users (id, email, password_hash, role, created_at, updated_at) VALUES 

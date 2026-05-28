@@ -138,6 +138,80 @@ export class DatabaseClient {
     return result?.count || 0;
   }
 
+  /**
+   * Cursor-based (keyset) pagination for O(1) performance at any scale.
+   * Uses (created_at, id) composite cursor instead of OFFSET.
+   */
+  async getBusinessesCursor(params: {
+    limit: number;
+    cursor?: string; // business id
+    category?: string;
+    city?: string;
+    governorate?: string;
+    search?: string;
+  }) {
+    const limit = params.limit + 1; // fetch one extra to detect has_more
+
+    if (params.cursor) {
+      let query = `
+        SELECT * FROM businesses
+        WHERE is_active = 1
+          AND (created_at, id) < (
+            SELECT created_at, id FROM businesses WHERE id = ?
+          )
+      `;
+      const queryParams: any[] = [params.cursor];
+
+      if (params.category) {
+        query += ' AND category = ?';
+        queryParams.push(params.category);
+      }
+      if (params.governorate) {
+        query += ' AND (governorate = ? OR LOWER(city) = ?)';
+        queryParams.push(params.governorate, params.governorate);
+      } else if (params.city) {
+        query += ' AND city = ?';
+        queryParams.push(params.city);
+      }
+      if (params.search) {
+        query += ' AND (name LIKE ? OR description LIKE ?)';
+        queryParams.push(`%${params.search}%`, `%${params.search}%`);
+      }
+
+      query += ' ORDER BY created_at DESC, id DESC LIMIT ?';
+      queryParams.push(limit);
+
+      const result = await this.db.prepare(query).bind(...queryParams).all();
+      return result.results || [];
+    }
+
+    // First page (no cursor)
+    let query = 'SELECT * FROM businesses WHERE is_active = 1';
+    const queryParams: any[] = [];
+
+    if (params.category) {
+      query += ' AND category = ?';
+      queryParams.push(params.category);
+    }
+    if (params.governorate) {
+      query += ' AND (governorate = ? OR LOWER(city) = ?)';
+      queryParams.push(params.governorate, params.governorate);
+    } else if (params.city) {
+      query += ' AND city = ?';
+      queryParams.push(params.city);
+    }
+    if (params.search) {
+      query += ' AND (name LIKE ? OR description LIKE ?)';
+      queryParams.push(`%${params.search}%`, `%${params.search}%`);
+    }
+
+    query += ' ORDER BY created_at DESC, id DESC LIMIT ?';
+    queryParams.push(limit);
+
+    const result = await this.db.prepare(query).bind(...queryParams).all();
+    return result.results || [];
+  }
+
   async updateBusiness(id: string, data: Partial<{
     name: string;
     description: string;
