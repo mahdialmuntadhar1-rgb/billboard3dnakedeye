@@ -34,10 +34,11 @@ function App() {
 
   const fetchData = async () => {
     try {
+      const API_URL = import.meta.env.VITE_API_URL || '/api';
       const [businessesRes, governoratesRes, categoriesRes] = await Promise.all([
-        axios.get('/api/businesses'),
-        axios.get('/api/governorates'),
-        axios.get('/api/categories')
+        axios.get(`${API_URL}/businesses`),
+        axios.get(`${API_URL}/governorates`),
+        axios.get(`${API_URL}/categories`)
       ]);
 
       setBusinesses(businessesRes.data.data);

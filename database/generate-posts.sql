@@ -1,0 +1,14 @@
+-- Generate posts for imported businesses
+-- Business postcards/feed cards
+
+INSERT INTO posts (id, business_id, type, title, content, image_url, category, governorate, tags, status, created_at) VALUES
+('post_001', 'biz_001', 'business_card', 'مطعم الشرقية', 'مطعم عراقي أصيل يقدم أشهى المأكولات الشعبية والمشاوي. نفتح يومياً من الساعة 10 صباحاً حتى منتصف الليل.', '', 'Restaurants & Cafes', 'Baghdad', 'iraqi,food,family', 'active', datetime('now')),
+('post_002', 'biz_002', 'business_card', 'كافيه العراق', 'كافيه عصري في قلب المدينة يقدم القهوة المختصة والمشروبات الباردة. أجواء هادئة ومريحة للعائلات.', '', 'Restaurants & Cafes', 'Baghdad', 'coffee,modern,relax', 'active', datetime('now')),
+('post_003', 'biz_003', 'business_card', 'صيدلية الشفاء', 'صيدلية متكاملة توفر جميع الأدوية والمستلزمات الطبية. خدمة على مدار الساعة وتوصيل للمنازل.', '', 'Health & Medical Services', 'Basra', 'pharmacy,health,delivery', 'active', datetime('now')),
+('post_004', 'biz_004', 'business_card', 'مكتب العقارات الذهبي', 'متخصصون في بيع وتأجير العقارات السكنية والتجارية في جميع أنحاء العراق. خبرة أكثر من 15 عاما.', '', 'Real Estate', 'Erbil', 'real,estate,property', 'active', datetime('now')),
+('post_005', 'biz_005', 'business_card', 'محل الإلكترونيات الحديث', 'أحدث الأجهزة الإلكترونية والهواتف الذكية بأسعار تنافسية. ضمان سنة وخدمة ما بعد البيع.', '', 'Electronics & Tech Shops', 'Nineveh', 'electronics,phones,tech', 'active', datetime('now')),
+('post_006', 'biz_006', 'business_card', 'خواردنگەی سەرکەوتن', 'چێشتخانەیەکی کوردی ئەسیل کە خواردنی دەستپێکردن و کەبابی دەپێشکەش دەکات. ڕۆژانە لە کاتژمێر ١٠ی بەیانی تا نیوەشەو کراوەیە.', '', 'Restaurants & Cafes', 'Sulaymaniyah', 'kurdish,food,traditional', 'active', datetime('now')),
+('post_007', 'biz_007', 'business_card', 'دەرمانخانەی ژیان', 'دەرمانخانەیەکی تەواو کە هەموو دەرمان و پێداویستییەکانی پزیشکی دەپێشکەش دەکات. خزمەتگوزاری ٢٤ کاتژمێر.', '', 'Health & Medical Services', 'Erbil', 'pharmacy,kurdish,health', 'active', datetime('now')),
+('post_008', 'biz_008', 'business_card', 'Al-Rasheed Restaurant', 'Authentic Iraqi cuisine serving traditional dishes and grilled meats since 1995. Open daily, family-friendly atmosphere.', '', 'Restaurants & Cafes', 'Baghdad', 'iraqi,food,traditional', 'active', datetime('now')),
+('post_009', 'biz_009', 'business_card', 'Baghdad Tech Hub', 'Full-service IT solutions provider offering web development, networking, and software support. Serving businesses across Iraq.', '', 'IT & Software Services', 'Baghdad', 'it,software,tech', 'active', datetime('now')),
+('post_010', 'biz_010', 'business_card', 'Tigris Pharmacy', 'Fully stocked pharmacy offering prescription and over-the-counter medications. Delivery available and open 24 hours for emergencies.', '', 'Health & Medical Services', 'Nineveh', 'pharmacy,health,delivery', 'active', datetime('now'));

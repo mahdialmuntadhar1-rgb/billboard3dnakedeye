@@ -1,0 +1,43 @@
+{
+  "totalRows": 570,
+  "importedRows": 570,
+  "skippedRows": 0,
+  "byLanguage": {
+    "en": 190,
+    "ar": 190,
+    "ku": 190
+  },
+  "byCategory": {
+    "IT & Software Services": 19,
+    "Hotels & Hospitality": 57,
+    "Health & Medical Services": 57,
+    "Fitness & Gyms": 57,
+    "Education & Training Centers": 57,
+    "Restaurants & Cafes": 95,
+    "Real Estate": 57,
+    "Construction & Contractors": 57,
+    "Beauty & Salons": 57,
+    "Electronics & Tech Shops": 57
+  },
+  "byGovernorate": {
+    "Baghdad": 30,
+    "Basra": 30,
+    "Nineveh": 30,
+    "Kirkuk": 30,
+    "Diyala": 30,
+    "Anbar": 30,
+    "Karbala": 30,
+    "Najaf": 30,
+    "Maysan": 30,
+    "Muthanna": 30,
+    "Qadisiyyah": 30,
+    "Babil": 30,
+    "Wasit": 30,
+    "Erbil": 30,
+    "Sulaymaniyah": 30,
+    "Dohuk": 30,
+    "Halabja": 30,
+    "Saladin": 30,
+    "Tikrit": 30
+  }
+}

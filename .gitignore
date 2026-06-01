@@ -20,6 +20,9 @@ dist/
 build/
 *.log
 
+# Cloudflare local state
+.wrangler/
+
 # IDE
 .vscode/
 .idea/

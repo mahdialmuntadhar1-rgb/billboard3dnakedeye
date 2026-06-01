@@ -1,24 +1,20 @@
 {
   "name": "iraq-businesses-dashboard",
   "version": "1.0.0",
-  "description": "Iraq Businesses Dashboard with Map View",
-  "main": "server/index.js",
+  "description": "Iraq Businesses Dashboard with Import System",
+  "main": "worker/index.js",
+  "type": "module",
   "scripts": {
-    "start": "node server/index.js",
-    "dev": "concurrently \"npm run server\" \"npm run client\"",
-    "server": "nodemon server/index.js",
-    "client": "cd client && npm start",
-    "build": "cd client && npm run build",
-    "import-data": "node scripts/import-csv.js"
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "migrate": "wrangler d1 execute iraq-businesses --file=database/schema.sql --remote",
+    "generate:import:122423": "node scripts/generate-122423-d1-import.js",
+    "import:122423:remote": "powershell -ExecutionPolicy Bypass -File database/import-122423/import-all.ps1"
   },
   "dependencies": {
-    "express": "^4.18.2",
-    "cors": "^2.8.5",
-    "csv-parser": "^3.0.0",
-    "dotenv": "^16.3.1"
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
-    "nodemon": "^3.0.1",
-    "concurrently": "^8.2.2"
+    "wrangler": "^3.114.0"
   }
 }
